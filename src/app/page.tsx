@@ -1,46 +1,89 @@
 "use client";
 
-import { Tangerine , Bilbo_Swash_Caps, UnifrakturMaguntia, EB_Garamond} from "next/font/google";
-
 import Image from "next/image";
-import styles from "./page.module.css";
-import { useRouter } from "next/navigation";
-
+import { Tangerine, Bilbo_Swash_Caps, UnifrakturMaguntia, EB_Garamond } from "next/font/google";
 import { useState } from "react";
-
-const tangerine = Tangerine({
-    weight: ["400", "700"],
-    subsets: ["latin"],
-  });
-
-const bilbo = Bilbo_Swash_Caps({
-    weight: ["400", "400"],
-    subsets: ["latin"],
-  });
+import styles from "./page.module.css";
 
 const unifraktur_magunitia = UnifrakturMaguntia({
-  weight: ["400", "400"],
+  weight: ["400"],
   subsets: ["latin"],
 });
 
 const eb_garamond = EB_Garamond({
-  weight: ["400", "400"],
+  weight: ["400"],
   subsets: ["latin"],
 });
 
-
+type Student = {
+  name: string;
+  studentId: string;
+  score: {
+    English: number;
+    "Mother Tongue (Chinese)": number;
+    Mathematics: number;
+    Science: number;
+    "Social Studies": number;
+  };
+};
 
 export default function Home() {
   const [studentId, setStudentId] = useState("");
-  const [history, setHistory] = useState([]);
-  const router = useRouter();
+  const [student, setStudent] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+
+  const students: Student[] = [
+    {
+      name: "Marshmellow Tan Yu Kui",
+      studentId: "D2019883568I",
+      score: {
+        English: 89,
+        "Mother Tongue (Chinese)": 92,
+        Mathematics: 90,
+        Science: 91,
+        "Social Studies": 83,
+      },
+    },
+    {
+      name: "Mayonnaise Tan Xin Yu",
+      studentId: "D2020744972J",
+      score: {
+        English: 96,
+        "Mother Tongue (Chinese)": 90,
+        Mathematics: 97,
+        Science: 98,
+        "Social Studies": 89,
+      },
+    },
+  ];
+
+  const calculateTotal = (score: Student["score"]) => {
+    return Object.values(score).reduce((acc, val) => acc + val, 0);
+  };
 
   const handleSearch = () => {
     if (!studentId) {
       alert("Please enter a Dragon Student ID");
       return;
     }
-    router.push(`/results?studentId=${studentId}`);
+
+    setLoading(true);
+    setShowResult(true);
+    setTimeout(() => {
+      const found = students.find(
+        (s) => s.studentId.toLowerCase() === studentId.toLowerCase()
+      );
+
+      setStudent(found || null);
+      setLoading(false);
+    }, 1500);
+  };
+
+  const handleBack = () => {
+    setShowResult(false);
+    setStudent(null);
+    setStudentId("");
   };
 
   return (
@@ -56,6 +99,7 @@ export default function Home() {
         textAlign: "center",
       }}
     >
+      {/* BACKGROUND */}
       <div
         style={{
           position: "absolute",
@@ -81,16 +125,14 @@ export default function Home() {
       <Image
         src="/DPSLE_logo_.png"
         alt="DPSLE Logo"
-        width={0}
-        height={0}
-        sizes="240px"
+        width={240}
+        height={200}
         style={{
-          height: "240px",
-          width: "auto",
           marginBottom: "10px",
+
         }}
       />
-      {/* Logo / Title */}
+
       <h1
         className={unifraktur_magunitia.className}
         style={{
@@ -101,77 +143,184 @@ export default function Home() {
       >
         DPSLE Foundation
       </h1>
-      <h2 
-      className={unifraktur_magunitia.className}
-      style={{ fontSize: "2.4rem", marginBottom: "20px", color: "#926D42", fontWeight: "normal" }}>
+
+      <h2
+        className={unifraktur_magunitia.className}
+        style={{
+          fontSize: "2.4rem",
+          marginBottom: "20px",
+          color: "#926D42",
+          fontWeight: "normal",
+        }}
+      >
         Dragon Primary School Leaving Examination
       </h2>
 
+      {/* ================= SEARCH VIEW ================= */}
+      {!showResult && (
+        <>
+          <p
+            className={eb_garamond.className}
+            style={{
+              fontSize: "1.3rem",
+              maxWidth: "90%",
+              marginBottom: "40px",
+              color: "#926D42",
+            }}
+          >
+            The Dragon Primary School Leaving Examination (DPSLE) is an annual global examination that is taken by candidates at the end of their final year of dragon primary school education.
+          </p>
 
-      {/* Description */}
-      <p 
-      className={eb_garamond.className}
-      style={{  fontSize: "1.3rem", maxWidth: "90%", marginBottom: "40px", color: "#926D42" }}>
-        The Dragon Primary School Leaving Examination (DPSLE) is an annual global examination that is taken by candidates at the end of their final year of dragon primary school education.
-      </p>
+          <p className={eb_garamond.className} style={{ fontSize: "1.3rem", maxWidth: "90%", marginBottom: "40px", color: "#926D42" }}> Established as a benchmark of excellence, the Dragon PSLE has a long-standing history of shaping disciplined, knowledgeable, and resilient dragon students. Over the years, it has evolved to focus not only on academic achievement but also on character development and lifelong learning. </p>
 
-      <p 
-      className={eb_garamond.className}
-      style={{  fontSize: "1.3rem", maxWidth: "90%", marginBottom: "40px", color: "#926D42" }}>
-        Established as a benchmark of excellence, the Dragon PSLE has a long-standing history of shaping disciplined,
-        knowledgeable, and resilient dragon students. Over the years, it has evolved to focus not only on academic
-        achievement but also on character development and lifelong learning.
-      </p>
+          <p
+            className={eb_garamond.className}
+            style={{
+              fontWeight: "bold",
+              fontSize: "1.3rem",
+              marginBottom: "40px",
+              color: "#926D42",
+            }}
+          >
+            Search your DPSLE Score here.
+          </p>
 
-      <p 
-      className={eb_garamond.className}
-      style={{ fontWeight: "bold", fontSize: "1.3rem", maxWidth: "90%", marginBottom: "40px", color: "#926D42" }}>
-        Search your DPSLE Score here.
-      </p>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <input className={eb_garamond.className}
+              type="text"
+              placeholder="Enter Student ID"
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              style={{
+                padding: "10px",
+                fontSize: "1rem",
+                borderRadius: "8px",
+                backgroundColor: "#5B3C13",
+                border: "0px",
+                color: "white",
+                outline: "3px solid #926D42",
+                outlineOffset: "2px",
+                width: "250px",
+              }}
+            />
 
-      {/* Search Section */}
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          alignItems: "center",
-        }}
-      >
-       <input
-        type="text"
-        placeholder="Enter Student ID"
-        value={studentId}
-        onChange={(e) => setStudentId(e.target.value)}
-        style={{
-          padding: "10px",
-          fontSize: "1rem",
-          borderRadius: "8px",
-          backgroundColor: "#5B3C13", // input box color
-          border: "0px",
-          color: "white", // text color for readability
+            <button className={eb_garamond.className}
+              onClick={handleSearch}
+              style={{
+                padding: "10px 20px",
+                fontSize: "1rem",
+                backgroundColor: "#926D42",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Search
+            </button>
+          </div>
+        </>
+      )}
 
-          // Outline (outer border effect)
-          outline: "3px solid #926D42",
-          outlineOffset: "2px", // creates space between border and outline
-          width: "250px",
-        }}
-      />
+      {/* ================= RESULT VIEW ================= */}
+      {showResult && (
+        <div style={{
+            marginTop: "20px",
+            width: "90%",
 
-        <button
-          onClick={handleSearch}
-          style={{
-            padding: "10px 20px",
-            fontSize: "1rem",
-            backgroundColor: "#926D42",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          Search
-        </button>
-      </div>
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",      // center horizontally
+            justifyContent: "center",  // center vertically (if height is set)
+            marginLeft: "auto",
+            marginRight: "auto",       // center the container itself
+            textAlign: "center",       // center text
+          }}>
+          <h1 className={eb_garamond.className} style={{ color: "#926D42", marginBottom: "20px" }}>
+            Student Result
+          </h1>
+
+          {loading && <p className={eb_garamond.className}  style={{ fontSize: '2rem',
+              }}
+          >Loading...</p>}
+
+          {!loading && student && (
+            <div className={eb_garamond.className}
+              style={{
+                width: "90%",
+                border: "40px solid transparent",
+                borderImage: "url('/fancy_border_left.svg') 100 stretch",
+                padding: "20px",
+              }}
+            >
+              <div style={{ padding: "10px", color: "#5B3C13" }}>
+                <div
+                  style={{
+                    backgroundColor: "#5B3C13",
+                    color: "white",
+                    padding: "15px",
+                    borderRadius: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    marginBottom: "20px",
+                    border: "0px",
+                    outline: "3px solid #5B3C13",
+                    outlineOffset: "3px",
+                  }}
+                >
+                  <p>{student.name}</p>
+                  <p style={{ fontSize: "1.2rem" }}>
+                    ID: {student.studentId}
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    backgroundColor: "#926D42",
+                    color: "white",
+                    padding: "15px",
+                    borderRadius: "10px",
+                    outline: "3px solid #926D42",
+                    outlineOffset: "3px",
+                  }}
+                >
+                  <p>English: {student.score.English}</p>
+                  <p>Chinese: {student.score["Mother Tongue (Chinese)"]}</p>
+                  <p>Mathematics: {student.score.Mathematics}</p>
+                  <p>Science: {student.score.Science}</p>
+                  <p>Social Studies: {student.score["Social Studies"]}</p>
+                </div>
+
+                <hr style={{ margin: "10px 0" }} />
+
+                <h3 style={{ fontSize: "1.5rem" }}>
+                  Total: {calculateTotal(student.score)}
+                </h3>
+              </div>
+            </div>
+          )}
+
+          {!loading && !student && (
+            <p style={{ color: "#926D42" }}>Student not found</p>
+          )}
+
+          <button className={eb_garamond.className}
+            onClick={handleBack}
+            style={{
+              marginTop: "20px",
+              padding: "10px 20px",
+              backgroundColor: "#926D42",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Back
+          </button>
+        </div>
+      )}
     </main>
   );
 }
