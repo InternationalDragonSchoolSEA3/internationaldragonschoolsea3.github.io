@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -17,10 +16,9 @@ type Student = {
 };
 
 export default function ResultPage() {
-  const searchParams = useSearchParams();
-  const studentId = searchParams.get("studentId");
-
   const router = useRouter();
+
+  const [studentId, setStudentId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [student, setStudent] = useState<Student | null>(null);
 
@@ -49,6 +47,14 @@ export default function ResultPage() {
     },
   ];
 
+  // ✅ Get studentId from URL manually
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("studentId");
+    setStudentId(id);
+  }, []);
+
+  // ✅ Find student after studentId is available
   useEffect(() => {
     if (!studentId) return;
 
@@ -98,73 +104,78 @@ export default function ResultPage() {
 
       {/* Result */}
       {!loading && student && (
-         <div
-        style={{
+        <div
+          style={{
             width: "90%",
             border: "40px solid transparent",
             borderImage: "url('/fancy_border_left.svg') 100 stretch",
             padding: "20px",
-        }}
-        >
-        <div
-          style={{
-            padding: "10px",
-            width: "100%",
-            color: "#5B3C13",
           }}
         >
-          {/* Student Info Box */}
-        <div
-        style={{
-            backgroundColor: "#5B3C13",
-            color: "white",
-            padding: "15px",
-            borderRadius: "10px",
-            outline: "3px solid #5B3C13",
-            outlineOffset: "3px",
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            marginBottom: "20px",
-        }}
-        >
-            <p>{student.name}</p>
-            <p style={{fontSize: "1.2rem"}}>ID: {student.studentId}</p>
-        </div>
+          <div
+            style={{
+              padding: "10px",
+              width: "100%",
+              color: "#5B3C13",
+            }}
+          >
+            {/* Student Info Box */}
+            <div
+              style={{
+                backgroundColor: "#5B3C13",
+                color: "white",
+                padding: "15px",
+                borderRadius: "10px",
+                outline: "3px solid #5B3C13",
+                outlineOffset: "3px",
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                marginBottom: "20px",
+              }}
+            >
+              <p>{student.name}</p>
+              <p style={{ fontSize: "1.2rem" }}>ID: {student.studentId}</p>
+            </div>
 
-        {/* Score Box */}
-        <div
-        style={{
-            backgroundColor: "#926D42",
-            color: "white",
-            padding: "15px",
-            borderRadius: "10px",
-            outline: "3px solid #926D42",
-            outlineOffset: "3px",
-            fontSize: "1rem",
-        }}
-        >
-        <p>English: {student.score.English}</p>
-        <p>Chinese: {student.score["Mother Tongue (Chinese)"]}</p>
-        <p>Mathematics: {student.score.Mathematics}</p>
-        <p>Science: {student.score.Science}</p>
-        <p>Social Studies: {student.score["Social Studies"]}</p>
-        </div>
+            {/* Score Box */}
+            <div
+              style={{
+                backgroundColor: "#926D42",
+                color: "white",
+                padding: "15px",
+                borderRadius: "10px",
+                outline: "3px solid #926D42",
+                outlineOffset: "3px",
+                fontSize: "1rem",
+              }}
+            >
+              <p>English: {student.score.English}</p>
+              <p>Chinese: {student.score["Mother Tongue (Chinese)"]}</p>
+              <p>Mathematics: {student.score.Mathematics}</p>
+              <p>Science: {student.score.Science}</p>
+              <p>Social Studies: {student.score["Social Studies"]}</p>
+            </div>
 
-        <hr style={{ margin: "10px 0" }} />
+            <hr style={{ margin: "10px 0" }} />
 
-          <h3 style={{fontSize: "1.5rem"}}>Total: {calculateTotal(student.score)}</h3>
-        </div>
+            <h3 style={{ fontSize: "1.5rem" }}>
+              Total: {calculateTotal(student.score)}
+            </h3>
+          </div>
         </div>
       )}
 
       {/* Not found */}
       {!loading && !student && (
-        <p style={{ color: "#926D42", paddingBottom: '10px' }}>Student not found</p>
+        <p style={{ color: "#926D42", paddingBottom: "10px" }}>
+          Student not found
+        </p>
       )}
-    {!loading && (
-        <button 
-        onClick={() => router.back()}
-        style={{
+
+      {!loading && (
+        <button
+          onClick={() => router.back()}
+          style={{
             marginBottom: "20px",
             padding: "10px 20px",
             backgroundColor: "#926D42",
@@ -173,12 +184,11 @@ export default function ResultPage() {
             borderRadius: "8px",
             cursor: "pointer",
             fontWeight: "bold",
-        }}
+          }}
         >
-        Back
-    </button>
-    )}
-    
+          Back
+        </button>
+      )}
     </main>
   );
 }
